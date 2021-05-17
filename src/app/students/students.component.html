@@ -1,0 +1,59 @@
+
+  <div class="container">
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let student of studentsArray.controls, index as s">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+             Student {{ s + 1}}
+          </mat-panel-title>
+          <mat-panel-description>
+            <button mat-button color="warn" (click)="removeStudent()">
+              Remove Student
+            </button>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+          <form [formGroup]="student">
+            <mat-form-field>
+              <mat-label>Student Name</mat-label>
+              <input matInput type="text" formControlName="name">
+            </mat-form-field>
+            <div class="expensesContainer">
+              <ng-container formArrayName="expenses">
+                <div *ngFor="let expense of getExpenses(student), index as i">
+                    <ng-container [formGroup]="expense">
+                      <div class="expenseLine">
+                        <mat-form-field>
+                          <mat-label>Expense Name</mat-label>
+                          <input matInput type="text" formControlName="expenseName">
+                        </mat-form-field>
+                        <mat-form-field class="expenseCost">
+                          <mat-label>Expense Cost</mat-label>
+                          <input matInput type="number" formControlName="expenseCost">
+                        </mat-form-field>
+                      </div>
+                      <button mat-raised-button color="primary" (click)="addExpense(getExpenses(student))">
+                        <mat-icon aria-hidden="false" aria-label="Add icon">add</mat-icon>
+                      </button>
+                      <small><span id="add">Add</span> and <span id="remove">Remove</span></small>
+                      <button mat-raised-button color="warn" (click)="removeExpense()">
+                        <mat-icon aria-hidden="false" aria-label="Remove icon">remove</mat-icon>
+                      </button>
+                      <small>Expenses</small>
+                    </ng-container>                  
+                </div>
+              </ng-container>
+            </div>
+          </form>
+    </mat-expansion-panel>
+    <!-- <button mat-raised-button color="primary" type="submit">Calculate</button>
+    <button mat-raised-button color="accent">Add Student</button> -->
+  </mat-accordion>
+  <div class="btnContainer">
+    <button mat-raised-button color="accent" (click)="addStudent()">Add Student</button>
+    <button mat-raised-button color="primary">Calculate</button>
+  </div>
+</div>
+
+
+
+  
