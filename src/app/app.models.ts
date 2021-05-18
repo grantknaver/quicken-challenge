@@ -7,3 +7,8 @@ export interface Student {
     name: string;
     expenses: StudentExpenses[];
 }
+
+export interface StudentTotals {
+    name: string;
+    total: number;
+}

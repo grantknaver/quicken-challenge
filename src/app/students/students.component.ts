@@ -1,6 +1,8 @@
-import { ThrowStmt } from '@angular/compiler';
 import { Component, OnInit, Output, } from '@angular/core';
 import { FormGroup, FormControl, FormArray, Validators, AbstractControl } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { StudentTotals } from '../app.models';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -13,12 +15,18 @@ export class StudentsComponent implements OnInit {
   panelOpenState = false;
   studentsArray: FormArray;
   currentExpenses: AbstractControl[]
+  studentTotals: StudentTotals[];
+ 
+  constructor(
+    private http: HttpClient
+    ) {}
 
   ngOnInit(): void {
     this.studentsArray = new FormArray([this.generateDefaultStudent()]);
+    this.studentTotals = [{name: '', total: 0}];
   }
 
-  addStudent() {
+  addStudent(): void {
     this.studentsArray.push(this.generateDefaultStudent());
   }
 
@@ -26,17 +34,17 @@ export class StudentsComponent implements OnInit {
 
   }
 
-  generateDefaultStudent() {
+  generateDefaultStudent(): FormGroup {
     return new FormGroup({
-      name: new FormControl('', Validators.required),
+      name: new FormControl('Adam', Validators.required),
       expenses: new FormArray([this.generateDefaultExpense()]),
     });
   }
 
-  generateDefaultExpense() {
+  generateDefaultExpense(): FormGroup {
     return new FormGroup({
       expenseName: new FormControl('', Validators.required),
-      expenseCost: new FormControl(0, Validators.required),
+      expenseCost: new FormControl(null, Validators.required),
     });
   }
 
@@ -44,20 +52,42 @@ export class StudentsComponent implements OnInit {
     expenses.push(this.generateDefaultExpense());
   }
 
+  addStudentExpenses(student: FormGroup, expenses: FormGroup): number {
+    const studentTotalsLength = this.studentTotals.length;
+    const studentName = student.get('name').value;
+    const studentExpense = expenses.get('expenseCost').value;
+    const currentTotal = {
+      ...this.studentTotals[studentTotalsLength - 1], 
+      name: studentName, 
+      total: this.studentTotals[studentTotalsLength - 1].total + studentExpense
+    };
+    this.studentTotals.push(currentTotal);
+    // Need more exact way to target rather than studentTotalsLength - 1 (findIndex?)
+    return currentTotal.total;
+  }
+
   removeExpense() {}
 
-  getStudentName(fg: FormGroup) {
+  getStudentName(fg: FormGroup): string {
     return fg.get('name').value;
   }
 
-  getExpenses(fg: FormGroup) {
+  getExpenses(fg: FormGroup): AbstractControl[] {
     const fa = fg.get('expenses') as FormArray;
     this.currentExpenses = fa.controls;
     return fa.controls;
   }
 
   calculate() {
-    console.log('calculate works');
+    const answer = {
+      message: 'Calculation Complete', 
+      studentsOwe: this.studentTotals
+    };
+    this.http.post(`${environment.host}/save-calculation`, answer).subscribe();
+  }
+
+  test() {
+    console.log('onChange works');
   }
 
 }

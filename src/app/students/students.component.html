@@ -15,7 +15,7 @@
           <form [formGroup]="student">
             <mat-form-field>
               <mat-label>Student Name</mat-label>
-              <input matInput type="text" formControlName="name">
+              <input matInput type="text" formControlName="name" value="ksfksj">
             </mat-form-field>
             <div class="expensesContainer">
               <ng-container formArrayName="expenses">
@@ -24,11 +24,11 @@
                       <div class="expenseLine">
                         <mat-form-field>
                           <mat-label>Expense Name</mat-label>
-                          <input matInput type="text" formControlName="expenseName">
+                          <input matInput type="text" formControlName="expenseName" (keyup)="addStudentExpenses(student, expense)">
                         </mat-form-field>
                         <mat-form-field class="expenseCost">
                           <mat-label>Expense Cost</mat-label>
-                          <input matInput type="number" formControlName="expenseCost">
+                          <input matInput type="number" formControlName="expenseCost" (keyup)="addStudentExpenses(student, expense)" placeholder="0">
                         </mat-form-field>
                       </div>
                       <button mat-raised-button color="primary" (click)="addExpense(getExpenses(student))">
@@ -50,7 +50,7 @@
   </mat-accordion>
   <div class="btnContainer">
     <button mat-raised-button color="accent" (click)="addStudent()">Add Student</button>
-    <button mat-raised-button color="primary">Calculate</button>
+    <button mat-raised-button color="primary" (click)="calculate()">Calculate</button>
   </div>
 </div>
 

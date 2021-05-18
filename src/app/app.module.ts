@@ -9,6 +9,7 @@ import { StudentsComponent } from './students/students.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatExpansionModule,
     ReactiveFormsModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
