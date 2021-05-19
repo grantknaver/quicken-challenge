@@ -17,8 +17,8 @@ export class StudentsComponent implements OnInit {
   @Output()panelOpenState = false;
   studentsArray: FormArray;
   currentExpenses: AbstractControl[] = [];
-  studentTotals: StudentTotals[] = [];
-  dumpArr: any[] = [];
+  showCalculation: boolean;
+  answer: string = '';
  
   constructor(
     private http: HttpClient
@@ -26,6 +26,7 @@ export class StudentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.studentsArray = new FormArray([this.generateDefaultStudent()]);
+    this.showCalculation = false;
   }
 
   addStudent(): void {
@@ -75,12 +76,9 @@ export class StudentsComponent implements OnInit {
   }
 
   calculate() {
-    const answer = {
-      message: 'Calculation Complete', 
-      studentsOwe: this.studentTotals
-    };
-    this.http.post(`${environment.host}/save-calculation`, answer).subscribe();
-    console.log('studentTotals', this.studentTotals);
+    this.showCalculation = true;
+    alert(this.answer);
+    this.http.post(`${environment.host}/save-calculation`, {}).subscribe();
   }
 
   getStudentFormGroup(studentIndex): FormGroup {
@@ -110,8 +108,25 @@ export class StudentsComponent implements OnInit {
   }
 
   getExpensesForallStudents() {
-    const expensesForAllStudents = this.studentsArray.value.map(({ totalExpenses, name }) => ({ totalExpenses, name }));
-    console.log("expensesForAllStudents: ", expensesForAllStudents);
-  }
+    const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }) => ({ totalExpenses, name }));
+    const totalCostForEveryone: number = expensesForAllStudents.map(v => v.totalExpenses).reduce((total, num) => total + num);
+    const numberOfStudents = expensesForAllStudents.length;
+    const studentsNeed2Pay = totalCostForEveryone / numberOfStudents;
+    const studentsAccording2Pay = expensesForAllStudents.sort((a, b) => b.totalExpenses - a.totalExpenses);
+    const test = studentsAccording2Pay.map((student, i) => {
+      let paying = 0;
+      if (i != 0) {
+        paying = Math.round(((studentsNeed2Pay - student.totalExpenses) + Number.EPSILON) * 100) / 100
+        this.answer = this.answer + ` ${student.name} needs to pay $${paying} `;
+      }
+      return {
+        ...student,
+        need2Pay: paying
+      }
+    });
 
+    console.log('test2', test);
+
+    
+  }
 }

@@ -10,6 +10,7 @@ export interface Student {
 
 export interface StudentTotals {
     name: string;
-    total: number;
-    id: number;
+    total?: number;
+    totalExpenses?: number;
+    need2Pay?: number
 }
