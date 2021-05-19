@@ -7,7 +7,7 @@
              Student #{{ studentIndex + 1 }} - Expenses - {{ student.value.totalExpenses  | currency}}
           </mat-panel-title>
           <mat-panel-description>
-            <button mat-button color="warn" (click)="removeStudent(studentIndex)">
+            <button mat-button color="warn" (click)="removeStudent(studentIndex)" [ngStyle]="{'display': styleRemoveStudentBtn(studentsArray.controls)}">
               Remove Student
             </button>
           </mat-panel-description>
@@ -36,23 +36,33 @@
                             (change)="updateStudentExpense(studentIndex)">
                         </mat-form-field>
                       </div>
-                      <button mat-raised-button color="primary"
-                      (click)="addStudentExpense(studentIndex)">
-                        <mat-icon aria-hidden="false" aria-label="Add icon">add</mat-icon>
-                      </button>
-                      <small><span id="add">Add</span> and <span id="remove">Remove</span></small>
-                      <button mat-raised-button color="warn" (click)="removeExpense(getExpenses(student), i)">
-                        <mat-icon aria-hidden="false" aria-label="Remove icon">remove</mat-icon>
-                      </button>
-                      <small>Expenses</small>
+                      <div *ngIf="styleExpenseBtns(getExpenses(student))">
+                        <button mat-raised-button color="primary"
+                        (click)="addStudentExpense(studentIndex)">
+                          <mat-icon aria-hidden="false" aria-label="Add icon">add</mat-icon>
+                        </button>
+                        <small><span id="add">Add</span> Expenses </small>
+                      </div>
+
+                      <div *ngIf="styleExpenseBtns(getExpenses(student)) === false">
+                        <button mat-raised-button color="primary"
+                        (click)="addStudentExpense(studentIndex)">
+                          <mat-icon aria-hidden="false" aria-label="Add icon">add</mat-icon>
+                        </button>
+                        <small><span id="add">Add</span> and <span id="remove">Remove</span></small>
+                        <button mat-raised-button color="warn" 
+                        (click)="removeExpense(getExpenses(student), i)">
+                          <mat-icon aria-hidden="false" aria-label="Remove icon">remove</mat-icon>
+                        </button>
+                        <small>Expenses</small>
+                      </div>
+
                     </ng-container>                  
                 </div>
               </ng-container>
             </div>
           </form>
     </mat-expansion-panel>
-    <!-- <button mat-raised-button color="primary" type="submit">Calculate</button>
-    <button mat-raised-button color="accent">Add Student</button> -->
   </mat-accordion>
   <div class="btnContainer">
     <button mat-raised-button color="accent" (click)="addStudent()">Add Student</button>

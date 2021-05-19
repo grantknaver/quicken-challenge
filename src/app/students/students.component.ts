@@ -20,9 +20,7 @@ export class StudentsComponent implements OnInit {
   showCalculation: boolean;
   answer: string = '';
  
-  constructor(
-    private http: HttpClient
-    ) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.studentsArray = new FormArray([this.generateDefaultStudent()]);
@@ -34,7 +32,8 @@ export class StudentsComponent implements OnInit {
   }
 
   removeStudent(studentIndex: number) {
-    studentIndex != 0 ? this.studentsArray.removeAt(studentIndex) : null;
+    // studentIndex != 0 ? this.studentsArray.removeAt(studentIndex) : null;
+    this.studentsArray.removeAt(studentIndex);
     this.updateStudentExpense(studentIndex);
   }
 
@@ -58,11 +57,8 @@ export class StudentsComponent implements OnInit {
   }
 
   removeExpense(expenses: AbstractControl[], expenseIndex: number): void {
-    expenseIndex != 0 ? expenses.splice(expenseIndex, 1) : null;
-  }
-
-  combineTotal(arr: []) {
-
+    // expenseIndex != 0 ? expenses.splice(expenseIndex, 1) : null;
+    expenses.splice(expenseIndex, 1);
   }
 
   getStudentName(fg: FormGroup): string {
@@ -79,6 +75,7 @@ export class StudentsComponent implements OnInit {
     this.showCalculation = true;
     alert(this.answer);
     this.http.post(`${environment.host}/save-calculation`, {}).subscribe();
+    location.reload();
   }
 
   getStudentFormGroup(studentIndex): FormGroup {
@@ -124,9 +121,18 @@ export class StudentsComponent implements OnInit {
         need2Pay: paying
       }
     });
+  }
 
-    console.log('test2', test);
+  styleRemoveStudentBtn(data: any) {
+    if (data.length === 1) {
+      return 'none';
+    } else {
+      return 'initial';
+    }
+  }
 
-    
+  styleExpenseBtns(data: any) {
+    console.log('data is', data.length);
+    return data.length === 1;
   }
 }
