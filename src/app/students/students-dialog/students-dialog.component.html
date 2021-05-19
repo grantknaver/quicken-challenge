@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>The Following Need To Pay</h2>
+<mat-dialog-content class="mat-typography">
+
+<div *ngFor="let record of studentsWhoOwe">
+  <h3>{{record.name}} owes {{ record.need2Pay }}</h3>
+</div>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

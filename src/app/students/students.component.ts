@@ -7,6 +7,8 @@ import { FormGroup, FormControl, FormArray, Validators, AbstractControl } from '
 import { HttpClient } from '@angular/common/http';
 import { StudentTotals } from '../app.models';
 import { environment } from '../../environments/environment';
+import { MatDialog } from '@angular/material/dialog';
+import { StudentsDialog } from './students-dialog/students-dialog.component';
 
 @Component({
   selector: 'app-students',
@@ -17,14 +19,13 @@ export class StudentsComponent implements OnInit {
   @Output()panelOpenState = false;
   studentsArray: FormArray;
   currentExpenses: AbstractControl[] = [];
-  showCalculation: boolean;
-  answer: string = '';
+  answerArray: StudentTotals[];
  
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    public dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.studentsArray = new FormArray([this.generateDefaultStudent()]);
-    this.showCalculation = false;
   }
 
   addStudent(): void {
@@ -32,14 +33,13 @@ export class StudentsComponent implements OnInit {
   }
 
   removeStudent(studentIndex: number) {
-    // studentIndex != 0 ? this.studentsArray.removeAt(studentIndex) : null;
     this.studentsArray.removeAt(studentIndex);
     this.updateStudentExpense(studentIndex);
   }
 
   generateDefaultStudent(): FormGroup {
     return new FormGroup({
-      name: new FormControl('', Validators.required),
+      name: new FormControl(''),
       expenses: new FormArray([this.generateDefaultExpense()]),
       totalExpenses: new FormControl(0, Validators.required),
     });
@@ -47,8 +47,8 @@ export class StudentsComponent implements OnInit {
 
   generateDefaultExpense(): FormGroup {
     return new FormGroup({
-      expenseName: new FormControl('', Validators.required),
-      expenseCost: new FormControl(0, Validators.required),
+      expenseName: new FormControl(''),
+      expenseCost: new FormControl(0, [Validators.required, Validators.min(0)]),
     });
   }
 
@@ -57,12 +57,7 @@ export class StudentsComponent implements OnInit {
   }
 
   removeExpense(expenses: AbstractControl[], expenseIndex: number): void {
-    // expenseIndex != 0 ? expenses.splice(expenseIndex, 1) : null;
     expenses.splice(expenseIndex, 1);
-  }
-
-  getStudentName(fg: FormGroup): string {
-    return fg.get('name').value;
   }
 
   getExpenses(fg: FormGroup): AbstractControl[] {
@@ -72,10 +67,8 @@ export class StudentsComponent implements OnInit {
   }
 
   calculate() {
-    this.showCalculation = true;
-    alert(this.answer);
-    this.http.post(`${environment.host}/save-calculation`, {}).subscribe();
-    location.reload();
+    this.openDialog()
+    // this.http.post(`${environment.host}/save-calculation`, {}).subscribe();
   }
 
   getStudentFormGroup(studentIndex): FormGroup {
@@ -105,16 +98,25 @@ export class StudentsComponent implements OnInit {
   }
 
   getExpensesForallStudents() {
-    const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }) => ({ totalExpenses, name }));
+    // const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }) => ({ totalExpenses, name }));
+    const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }, i) => {
+      const nameAutoFill = name === '' ? `Student ${i + 1}` : name;
+      return {
+        totalExpenses,
+        name: nameAutoFill
+      }
+    });
     const totalCostForEveryone: number = expensesForAllStudents.map(v => v.totalExpenses).reduce((total, num) => total + num);
     const numberOfStudents = expensesForAllStudents.length;
     const studentsNeed2Pay = totalCostForEveryone / numberOfStudents;
     const studentsAccording2Pay = expensesForAllStudents.sort((a, b) => b.totalExpenses - a.totalExpenses);
-    const test = studentsAccording2Pay.map((student, i) => {
+    this.answerArray = studentsAccording2Pay.map((student, i) => {
       let paying = 0;
       if (i != 0) {
-        paying = Math.round(((studentsNeed2Pay - student.totalExpenses) + Number.EPSILON) * 100) / 100
-        this.answer = this.answer + ` ${student.name} needs to pay $${paying} `;
+        // paying = Math.round(((studentsNeed2Pay - student.totalExpenses) + Number.EPSILON) * 100) / 100   
+        console.log(`${student.name} studentsNeed2Pay`, studentsNeed2Pay);
+        console.log(`${student.name} student.totalExpenses`, student.totalExpenses);
+        paying = studentsNeed2Pay - student.totalExpenses;
       }
       return {
         ...student,
@@ -132,7 +134,25 @@ export class StudentsComponent implements OnInit {
   }
 
   styleExpenseBtns(data: any) {
-    console.log('data is', data.length);
     return data.length === 1;
+  }
+
+  generateStudentLabel(index: number) {
+    const name = this.getStudentFormGroup(index).get('name').value  === '' ?  
+    `Student #${index + 1}` : 
+    this.getStudentFormGroup(index).get('name').value;
+    return name;
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(StudentsDialog, {
+      width: '30vw',
+      data: this.answerArray
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      // location.reload();
+    });
   }
 }
