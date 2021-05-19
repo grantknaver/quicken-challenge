@@ -1,13 +1,13 @@
 
   <div class="container">
   <mat-accordion>
-    <mat-expansion-panel *ngFor="let student of studentsArray.controls, index as s">
+    <mat-expansion-panel *ngFor="let student of studentsArray.controls, index as studentIndex">
         <mat-expansion-panel-header>
           <mat-panel-title>
-             Student {{ s + 1}}
+             Student #{{ studentIndex + 1 }} - Expenses - {{ student.value.totalExpenses  | currency}}
           </mat-panel-title>
           <mat-panel-description>
-            <button mat-button color="warn" (click)="removeStudent()">
+            <button mat-button color="warn" (click)="removeStudent(studentIndex)">
               Remove Student
             </button>
           </mat-panel-description>
@@ -15,27 +15,33 @@
           <form [formGroup]="student">
             <mat-form-field>
               <mat-label>Student Name</mat-label>
-              <input matInput type="text" formControlName="name" value="ksfksj">
+              <input #expenseUpdate matInput type="text" formControlName="name">
             </mat-form-field>
             <div class="expensesContainer">
               <ng-container formArrayName="expenses">
-                <div *ngFor="let expense of getExpenses(student), index as i">
+                <div *ngFor="let expense of getExpenses(student), index as studentExpenseIndex">
                     <ng-container [formGroup]="expense">
                       <div class="expenseLine">
                         <mat-form-field>
                           <mat-label>Expense Name</mat-label>
-                          <input matInput type="text" formControlName="expenseName" (keyup)="addStudentExpenses(student, expense)">
+                          <input matInput type="text" formControlName="expenseName">
                         </mat-form-field>
                         <mat-form-field class="expenseCost">
                           <mat-label>Expense Cost</mat-label>
-                          <input matInput type="number" formControlName="expenseCost" (keyup)="addStudentExpenses(student, expense)" placeholder="0">
+                          <input 
+                            #expenseUpdate 
+                            matInput 
+                            type="number" 
+                            formControlName="expenseCost"
+                            (change)="updateStudentExpense(studentIndex)">
                         </mat-form-field>
                       </div>
-                      <button mat-raised-button color="primary" (click)="addExpense(getExpenses(student))">
+                      <button mat-raised-button color="primary"
+                      (click)="addStudentExpense(studentIndex)">
                         <mat-icon aria-hidden="false" aria-label="Add icon">add</mat-icon>
                       </button>
                       <small><span id="add">Add</span> and <span id="remove">Remove</span></small>
-                      <button mat-raised-button color="warn" (click)="removeExpense()">
+                      <button mat-raised-button color="warn" (click)="removeExpense(getExpenses(student), i)">
                         <mat-icon aria-hidden="false" aria-label="Remove icon">remove</mat-icon>
                       </button>
                       <small>Expenses</small>

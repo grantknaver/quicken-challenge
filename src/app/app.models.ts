@@ -11,4 +11,5 @@ export interface Student {
 export interface StudentTotals {
     name: string;
     total: number;
+    id: number;
 }
