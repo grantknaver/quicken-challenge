@@ -113,10 +113,10 @@ export class StudentsComponent implements OnInit {
     this.answerArray = studentsAccording2Pay.map((student, i) => {
       let paying = 0;
       if (i != 0) {
-        // paying = Math.round(((studentsNeed2Pay - student.totalExpenses) + Number.EPSILON) * 100) / 100   
+        paying = Math.round(((studentsNeed2Pay - student.totalExpenses) + Number.EPSILON) * 100) / 100   
         console.log(`${student.name} studentsNeed2Pay`, studentsNeed2Pay);
         console.log(`${student.name} student.totalExpenses`, student.totalExpenses);
-        paying = studentsNeed2Pay - student.totalExpenses;
+        console.log('paying', paying);
       }
       return {
         ...student,

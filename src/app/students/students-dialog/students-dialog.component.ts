@@ -25,6 +25,11 @@ export class StudentsDialog implements OnInit {
     console.log('studentRecords', this.studentRecords);
   }
 
+  generatePaymentStatements(paymentStatus: number) {
+    const absoluteNumber = Math.abs(paymentStatus);
+    return paymentStatus > 0 ? `owes ${absoluteNumber}` : `overpaid ${absoluteNumber}`;
+  }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
