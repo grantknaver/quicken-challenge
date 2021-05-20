@@ -19,7 +19,7 @@ export class StudentsComponent implements OnInit {
   @Output()panelOpenState = false;
   studentsArray: FormArray;
   currentExpenses: AbstractControl[] = [];
-  answerArray: StudentTotals[];
+  answerArray: StudentTotals[] = [];
  
   constructor(private http: HttpClient,
     public dialog: MatDialog) {}
@@ -58,8 +58,12 @@ export class StudentsComponent implements OnInit {
   }
 
   calculate() {
-    this.openDialog();
-    this.http.post(`${environment.host}/save-calculation`, this.answerArray).subscribe();
+      if(this.answerArray.length >= 1) {
+        this.openDialog();
+        this.http.post(`${environment.host}/save-calculation`, this.answerArray).subscribe();
+      } else {
+        alert('Please input the expenses of more than one student!')
+      }
   }
 
   getStudentFormGroup(studentIndex): FormGroup {
