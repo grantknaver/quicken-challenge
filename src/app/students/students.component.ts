@@ -58,7 +58,7 @@ export class StudentsComponent implements OnInit {
   }
 
   calculate() {
-      if(this.answerArray.length >= 1) {
+      if(this.answerArray.length >= 2) {
         this.openDialog();
         this.http.post(`${environment.host}/save-calculation`, this.answerArray).subscribe();
       } else {
