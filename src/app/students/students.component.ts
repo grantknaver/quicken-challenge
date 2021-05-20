@@ -52,23 +52,23 @@ export class StudentsComponent implements OnInit {
     });
   }
 
-  removeExpense(expenseIndex: number, studentIndex): void {
+  removeExpense(expenseIndex: number, studentIndex: number): void {
     this.getStudentExpense(studentIndex).removeAt(expenseIndex);
     this.updateStudentExpense(studentIndex);
   }
 
   calculate() {
     this.openDialog();
-    this.http.post(`${environment.host}/save-calculation`, {}).subscribe();
+    this.http.post(`${environment.host}/save-calculation`, this.answerArray).subscribe();
   }
 
   getStudentFormGroup(studentIndex): FormGroup {
     const studentFormGroup: FormGroup = this.studentsArray.at(studentIndex) as FormGroup;
-    return studentFormGroup;
+    return studentFormGroup === undefined ? this.generateDefaultStudent() : studentFormGroup
   }
 
   // Allows for easier iteration
-  getExpenses(fg: FormGroup): AbstractControl[] {
+  getStudentExpensesArray(fg: FormGroup): AbstractControl[] {
     const fa = fg.get('expenses') as FormArray;
     this.currentExpenses = fa.controls;
     return fa.controls;
@@ -92,10 +92,10 @@ export class StudentsComponent implements OnInit {
     studentFormGroup.patchValue({
       totalExpenses: totalExpenseForTheStudent,
     });
-    this.getExpensesForallStudents();
+    this.getStudentExpensesArrayForallStudents();
   }
 
-  getExpensesForallStudents() {
+  getStudentExpensesArrayForallStudents() {
     const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }, i) => {
       const nameAutoFill = name === '' ? `Student ${i + 1}` : name;
       return {

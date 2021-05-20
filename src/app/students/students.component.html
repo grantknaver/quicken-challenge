@@ -19,7 +19,7 @@
             </mat-form-field>
             <div class="expensesContainer">
               <ng-container formArrayName="expenses">
-                <div *ngFor="let expense of getExpenses(student), index as studentExpenseIndex">
+                <div *ngFor="let expense of getStudentExpensesArray(student), index as studentExpenseIndex">
                     <ng-container [formGroup]="expense">
                       <div class="expenseLine">
                         <mat-form-field>
@@ -38,7 +38,7 @@
                             (change)="updateStudentExpense(studentIndex)">
                         </mat-form-field>
                       </div>
-                      <div *ngIf="styleExpenseBtns(getExpenses(student))">
+                      <div *ngIf="styleExpenseBtns(getStudentExpensesArray(student))">
                         <button mat-raised-button color="primary"
                         (click)="addStudentExpense(studentIndex)">
                           <mat-icon aria-hidden="false" aria-label="Add icon">add</mat-icon>
@@ -46,7 +46,7 @@
                         <small><span id="add">Add</span> Expenses </small>
                       </div>
 
-                      <div *ngIf="styleExpenseBtns(getExpenses(student)) === false">
+                      <div *ngIf="styleExpenseBtns(getStudentExpensesArray(student)) === false">
                         <button mat-raised-button color="primary"
                         (click)="addStudentExpense(studentIndex)">
                           <mat-icon aria-hidden="false" aria-label="Add icon">add</mat-icon>
