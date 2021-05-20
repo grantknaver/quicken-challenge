@@ -48,32 +48,30 @@ export class StudentsComponent implements OnInit {
   generateDefaultExpense(): FormGroup {
     return new FormGroup({
       expenseName: new FormControl(''),
-      expenseCost: new FormControl(0, [Validators.required, Validators.min(0)]),
+      expenseCost: new FormControl(null, [Validators.required, Validators.min(0)]),
     });
   }
 
-  addExpense(expenses: AbstractControl[]): void {
-    expenses.push(this.generateDefaultExpense());
-  }
-
-  removeExpense(expenses: AbstractControl[], expenseIndex: number): void {
-    expenses.splice(expenseIndex, 1);
-  }
-
-  getExpenses(fg: FormGroup): AbstractControl[] {
-    const fa = fg.get('expenses') as FormArray;
-    this.currentExpenses = fa.controls;
-    return fa.controls;
+  removeExpense(expenseIndex: number, studentIndex): void {
+    this.getStudentExpense(studentIndex).removeAt(expenseIndex);
+    this.updateStudentExpense(studentIndex);
   }
 
   calculate() {
-    this.openDialog()
-    // this.http.post(`${environment.host}/save-calculation`, {}).subscribe();
+    this.openDialog();
+    this.http.post(`${environment.host}/save-calculation`, {}).subscribe();
   }
 
   getStudentFormGroup(studentIndex): FormGroup {
     const studentFormGroup: FormGroup = this.studentsArray.at(studentIndex) as FormGroup;
     return studentFormGroup;
+  }
+
+  // Allows for easier iteration
+  getExpenses(fg: FormGroup): AbstractControl[] {
+    const fa = fg.get('expenses') as FormArray;
+    this.currentExpenses = fa.controls;
+    return fa.controls;
   }
 
   getStudentExpense(studentIndex): FormArray {
@@ -98,7 +96,6 @@ export class StudentsComponent implements OnInit {
   }
 
   getExpensesForallStudents() {
-    // const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }) => ({ totalExpenses, name }));
     const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }, i) => {
       const nameAutoFill = name === '' ? `Student ${i + 1}` : name;
       return {
@@ -114,9 +111,6 @@ export class StudentsComponent implements OnInit {
       let paying = 0;
       if (i != 0) {
         paying = Math.round(((studentsNeed2Pay - student.totalExpenses) + Number.EPSILON) * 100) / 100   
-        console.log(`${student.name} studentsNeed2Pay`, studentsNeed2Pay);
-        console.log(`${student.name} student.totalExpenses`, student.totalExpenses);
-        console.log('paying', paying);
       }
       return {
         ...student,
@@ -151,8 +145,7 @@ export class StudentsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      // location.reload();
+      location.reload();
     });
   }
 }

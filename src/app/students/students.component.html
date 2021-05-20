@@ -34,6 +34,7 @@
                             type="number" 
                             formControlName="expenseCost"
                             min="0"
+                            placeholder="0"
                             (change)="updateStudentExpense(studentIndex)">
                         </mat-form-field>
                       </div>
@@ -52,7 +53,7 @@
                         </button>
                         <small><span id="add">Add</span> and <span id="remove">Remove</span></small>
                         <button mat-raised-button color="warn" 
-                        (click)="removeExpense(getExpenses(student), i)">
+                        (click)="removeExpense(studentExpenseIndex, studentIndex)">
                           <mat-icon aria-hidden="false" aria-label="Remove icon">remove</mat-icon>
                         </button>
                         <small>Expenses</small>

@@ -2,7 +2,7 @@
 <mat-dialog-content class="mat-typography">
 
 <div *ngFor="let record of studentsWhoOwe">
-  <h3>{{record.name}} - {{ generatePaymentStatements(record.need2Pay)}}</h3>
+  <h3>{{record.name}} : {{ generatePaymentStatements(record.need2Pay)}}</h3>
 </div>
 
 </mat-dialog-content>
