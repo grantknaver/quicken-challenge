@@ -18,6 +18,7 @@
             mat-expansion-panel-header {
                 display:flex;
                 justify-content: space-between;
+                font-size: 12px;
 
                 mat-panel-title {
                     display: flex;
@@ -72,6 +73,81 @@
         button {
             margin: 1vh;
             font-size: 10px;
+
         }
     }
 }
+
+
+@media only screen and (max-width: 600px) {
+    .container {
+        
+        mat-accordion {
+            width: 95%;
+
+            mat-label {
+                font-size: 12px;
+            }
+    
+            input {
+                margin: 1vh 1vw;
+            }
+    
+            mat-expansion-panel {
+                margin-top: 5px;
+    
+                mat-expansion-panel-header {
+                    display:flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+    
+                    mat-panel-title {
+                        display: flex;
+                        align-items: center;
+                    }
+    
+                    mat-panel-description {
+                        button {
+                            font-size: 10px;
+                        }
+                    }
+                }
+    
+                
+                    .expensesContainer {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+    
+                        .expenseLine {
+                            display: flex;
+                            flex-wrap: wrap;
+                            
+                            input {
+                                width: 90%;
+                            }
+    
+                            .expenseCost {
+                                margin-left: 1vw;
+                            }
+                        }
+    
+                        button {
+                            margin: 1vh 1vw;
+                        }
+    
+                        small {
+    
+                            #add {
+                                color: #3F51B5;
+                            }
+                            
+                            #remove {
+                                color: #F44336;
+                            }
+                        }
+                    }
+            }
+        }
+    }
+  }

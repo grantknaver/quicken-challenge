@@ -21,10 +21,6 @@ export class StudentsDialog implements OnInit {
     this.studentsWhoOwe = this.studentRecords.slice(1);
   }
 
-  test() {
-    console.log('studentRecords', this.studentRecords);
-  }
-
   generatePaymentStatements(paymentStatus: number) {
     const absoluteNumber = Math.abs(paymentStatus);
     return paymentStatus > 0 ? `owes ${absoluteNumber}` : `overpaid ${absoluteNumber}`;
