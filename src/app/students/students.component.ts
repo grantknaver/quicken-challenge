@@ -3,7 +3,13 @@ import {
   OnInit,
   Output, 
 } from '@angular/core';
-import { FormGroup, FormControl, FormArray, Validators, AbstractControl } from '@angular/forms';
+import { 
+  FormGroup, 
+  FormControl, 
+  FormArray, 
+  Validators, 
+  AbstractControl 
+} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { StudentTotals } from '../app.models';
 import { environment } from '../../environments/environment';
@@ -17,9 +23,9 @@ import { StudentsDialog } from './students-dialog/students-dialog.component';
 })
 export class StudentsComponent implements OnInit {
   @Output()panelOpenState = false;
-  studentsArray: FormArray;
-  currentExpenses: AbstractControl[] = [];
-  answerArray: StudentTotals[] = [];
+  public studentsArray: FormArray;
+  public currentExpenses: AbstractControl[] = [];
+  private answerArray: StudentTotals[] = [];
  
   constructor(private http: HttpClient,
     public dialog: MatDialog) {}
@@ -32,7 +38,7 @@ export class StudentsComponent implements OnInit {
     this.studentsArray.push(this.generateDefaultStudent());
   }
 
-  removeStudent(studentIndex: number) {
+  removeStudent(studentIndex: number): void {
     this.studentsArray.removeAt(studentIndex);
     this.updateStudentExpense(studentIndex);
   }
@@ -57,16 +63,27 @@ export class StudentsComponent implements OnInit {
     this.updateStudentExpense(studentIndex);
   }
 
-  calculate() {
+  calculate(): void {
       if(this.answerArray.length >= 2) {
-        this.openDialog();
-        this.http.post(`${environment.host}/save-calculation`, this.answerArray).subscribe();
+        this.openDialog(this.answerArray, true);
+        this.http.post(`${environment.host}/save-calculation`, this.answerArray)
+          .subscribe((info: {message: string}) => {
+            console.log(info.message);
+          });
       } else {
         alert('Please input the expenses of more than one student!')
       }
   }
 
-  getStudentFormGroup(studentIndex): FormGroup {
+  getCalculate(): void {
+    this.http.get(`${environment.host}/get-calculation`)
+    .subscribe((data: StudentTotals[]) => {
+      this.openDialog(data, false);
+    });
+
+  }
+
+  getStudentFormGroup(studentIndex: number): FormGroup {
     const studentFormGroup: FormGroup = this.studentsArray.at(studentIndex) as FormGroup;
     return studentFormGroup === undefined ? this.generateDefaultStudent() : studentFormGroup
   }
@@ -78,18 +95,18 @@ export class StudentsComponent implements OnInit {
     return fa.controls;
   }
 
-  getStudentExpense(studentIndex): FormArray {
+  getStudentExpense(studentIndex: number): FormArray {
     const studentFormGroup = this.getStudentFormGroup(studentIndex);
     const studentExpenses: FormArray = studentFormGroup.get('expenses') as FormArray;
     return studentExpenses;
   }
 
-  addStudentExpense(studentIndex) {
+  addStudentExpense(studentIndex: number): void {
     const studentExpenses = this.getStudentExpense(studentIndex);
     studentExpenses.push(this.generateDefaultExpense());
   }
 
-  updateStudentExpense(studentIndex) {
+  updateStudentExpense(studentIndex: number): void {
     const studentExpenses = this.getStudentExpense(studentIndex);
     const studentFormGroup = this.getStudentFormGroup(studentIndex);
     const totalExpenseForTheStudent = studentExpenses.value.map(({ expenseCost }) => expenseCost).reduce((sum, itemCost) => sum + itemCost, 0);
@@ -99,7 +116,7 @@ export class StudentsComponent implements OnInit {
     this.getStudentExpensesArrayForallStudents();
   }
 
-  getStudentExpensesArrayForallStudents() {
+  getStudentExpensesArrayForallStudents(): void {
     const expensesForAllStudents: StudentTotals[] = this.studentsArray.value.map(({ totalExpenses, name }, i) => {
       const nameAutoFill = name === '' ? `Student ${i + 1}` : name;
       return {
@@ -123,7 +140,7 @@ export class StudentsComponent implements OnInit {
     });
   }
 
-  styleRemoveStudentBtn(data: any) {
+  styleRemoveStudentBtn(data: string): string {
     if (data.length === 1) {
       return 'none';
     } else {
@@ -131,25 +148,27 @@ export class StudentsComponent implements OnInit {
     }
   }
 
-  styleExpenseBtns(data: any) {
+  styleExpenseBtns(data: FormGroup[]): boolean {
     return data.length === 1;
   }
 
-  generateStudentLabel(index: number) {
+  generateStudentLabel(index: number): string {
     const name = this.getStudentFormGroup(index).get('name').value  === '' ?  
     `Student #${index + 1}` : 
     this.getStudentFormGroup(index).get('name').value;
     return name;
   }
 
-  openDialog(): void {
+  openDialog(calc: StudentTotals[] | string, currentCalculation: boolean): void {
     const dialogRef = this.dialog.open(StudentsDialog, {
-      width: '30vw',
-      data: this.answerArray
+      width: '80vw',
+      maxWidth: '300px',
+      data: {calc, currentCalculation}
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
       location.reload();
     });
   }
+
 }

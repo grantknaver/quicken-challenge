@@ -1,11 +1,28 @@
-<h2 mat-dialog-title> Student Payment Status</h2>
+<h2 mat-dialog-title *ngIf="dialogData.currentCalculation; else notCurrent">
+  Current Payment Status.
+</h2>
+
+<ng-template #notCurrent>
+  <h2 mat-dialog-title>
+    Past Payment Status
+  </h2>
+</ng-template>
+
 <mat-dialog-content class="mat-typography">
 
+
 <div *ngFor="let record of studentsWhoOwe">
-  <h3>{{record.name}} : {{ generatePaymentStatements(record.need2Pay)}}</h3>
+  <h3>{{record.name}}: 
+    <span [ngStyle]="{'color': generatePaymentStatements(record.need2Pay).status === 'owes' ? 'red' : '#3F51B5'}">
+      {{ generatePaymentStatements(record.need2Pay).amount}}
+    </span>
+  </h3>
+  <hr>
 </div>
 
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Close</button>
+  <span id="owesKey">Student Owes</span> 
+  <span id="overpaidKey">Student Overpaid</span>
+  <button id="closeBtn" mat-button mat-dialog-close>Close</button>
 </mat-dialog-actions>
